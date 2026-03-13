@@ -35,16 +35,11 @@ export async function onRequest(context) {
     }
 
     // 从环境变量获取 API Key
-    const apiKey = context.env.REMOVEBG_API_KEY || context.env.Value;
+    const apiKey = context.env.REMOVEBG_API_KEY;
     
     if (!apiKey) {
-      // 返回更详细的错误信息用于调试
       return new Response(JSON.stringify({ 
-        error: 'API Key 未配置',
-        debug: {
-          hasEnv: !!context.env,
-          envKeys: context.env ? Object.keys(context.env) : []
-        }
+        error: 'API Key 未配置'
       }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
@@ -75,8 +70,7 @@ export async function onRequest(context) {
       
       return new Response(
         JSON.stringify({ 
-          error: errorData.errors?.[0]?.title || '处理失败',
-          details: errorText
+          error: errorData.errors?.[0]?.title || '处理失败'
         }),
         {
           status: response.status,
@@ -88,7 +82,18 @@ export async function onRequest(context) {
     // 获取处理后的图片
     const resultBlob = await response.blob();
     const arrayBuffer = await resultBlob.arrayBuffer();
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+    
+    // 修复：使用分块方式转换 base64，避免栈溢出
+    const bytes = new Uint8Array(arrayBuffer);
+    let binary = '';
+    const chunkSize = 0x8000; // 32KB chunks
+    
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+      binary += String.fromCharCode.apply(null, chunk);
+    }
+    
+    const base64 = btoa(binary);
     const dataUrl = `data:image/png;base64,${base64}`;
 
     return new Response(
@@ -106,8 +111,7 @@ export async function onRequest(context) {
     return new Response(
       JSON.stringify({ 
         error: '服务器错误，请稍后重试',
-        message: error.message,
-        stack: error.stack
+        message: error.message
       }),
       {
         status: 500,
