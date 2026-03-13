@@ -35,10 +35,17 @@ export async function onRequest(context) {
     }
 
     // 从环境变量获取 API Key
-    const apiKey = context.env.REMOVEBG_API_KEY;
+    const apiKey = context.env.REMOVEBG_API_KEY || context.env.Value;
     
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'API Key 未配置' }), {
+      // 返回更详细的错误信息用于调试
+      return new Response(JSON.stringify({ 
+        error: 'API Key 未配置',
+        debug: {
+          hasEnv: !!context.env,
+          envKeys: context.env ? Object.keys(context.env) : []
+        }
+      }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -58,9 +65,19 @@ export async function onRequest(context) {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch (e) {
+        errorData = { errors: [{ title: errorText }] };
+      }
+      
       return new Response(
-        JSON.stringify({ error: errorData.errors?.[0]?.title || '处理失败' }),
+        JSON.stringify({ 
+          error: errorData.errors?.[0]?.title || '处理失败',
+          details: errorText
+        }),
         {
           status: response.status,
           headers: { 'Content-Type': 'application/json' },
@@ -86,9 +103,12 @@ export async function onRequest(context) {
     );
 
   } catch (error) {
-    console.error('Error processing image:', error);
     return new Response(
-      JSON.stringify({ error: '服务器错误，请稍后重试' }),
+      JSON.stringify({ 
+        error: '服务器错误，请稍后重试',
+        message: error.message,
+        stack: error.stack
+      }),
       {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
