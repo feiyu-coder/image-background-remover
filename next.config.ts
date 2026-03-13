@@ -1,16 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Cloudflare Pages 需要静态导出
-  output: 'export',
-  
-  // 禁用图片优化（Cloudflare Pages 不支持）
+  // 移除静态导出，使用标准 Next.js
   images: {
     unoptimized: true,
   },
-  
-  // 禁用 trailing slash
-  trailingSlash: true,
 };
 
 export default nextConfig;

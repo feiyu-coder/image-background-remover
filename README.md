@@ -1,22 +1,24 @@
 # Image Background Remover
 
-一个基于 Next.js 和 Tailwind CSS 的在线图片背景移除工具。
+一个基于 Next.js 和 Tailwind CSS 的在线图片背景移除工具，支持 Google OAuth 登录。
 
 ## 功能特点
 
 - 🚀 快速处理 - 3-10秒完成背景移除
 - 🔒 隐私保护 - 不存储用户图片
+- 👤 Google 登录 - 安全便捷的用户认证
 - 💻 无需注册 - 打开即用
 - 📱 响应式设计 - 支持桌面和移动端
 - 🎨 现代化 UI - 使用 Tailwind CSS
 
 ## 技术栈
 
-- **前端框架**: Next.js 15 (App Router)
+- **前端框架**: Next.js 16 (App Router)
 - **样式**: Tailwind CSS
 - **语言**: TypeScript
+- **认证**: NextAuth.js (Google OAuth)
 - **API**: Remove.bg API
-- **部署**: Vercel / Cloudflare Pages
+- **部署**: Vercel
 
 ## 快速开始
 
@@ -41,13 +43,20 @@ npm install
 cp .env.local.example .env.local
 ```
 
-编辑 `.env.local`，添加你的 Remove.bg API Key：
+编辑 `.env.local`，添加必要的配置：
 
 ```env
-REMOVEBG_API_KEY=your_actual_api_key_here
-```
+# Remove.bg API Key
+REMOVEBG_API_KEY=your_removebg_api_key
 
-获取 API Key：访问 [Remove.bg API](https://www.remove.bg/api) 注册并获取。
+# NextAuth
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_nextauth_secret
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+```
 
 ### 4. 运行开发服务器
 
@@ -64,32 +73,62 @@ npm run build
 npm start
 ```
 
+## 部署到 Vercel
+
+### 方法 1：通过 Vercel Dashboard（推荐）
+
+1. 访问 [vercel.com](https://vercel.com)
+2. 用 GitHub 登录
+3. 点击 **Import Project**
+4. 选择 `feiyu-coder/image-background-remover` 仓库
+5. 配置环境变量（见上方）
+6. 点击 **Deploy**
+
+### 方法 2：通过 Vercel CLI
+
+```bash
+npm i -g vercel
+vercel login
+vercel
+```
+
+## 配置 Google OAuth
+
+1. 访问 [Google Cloud Console](https://console.cloud.google.com/)
+2. 创建新项目或选择现有项目
+3. 启用 **Google+ API**
+4. 创建 **OAuth 2.0 客户端 ID**：
+   - 应用类型：Web 应用
+   - 授权重定向 URI：`https://your-domain.com/api/auth/callback/google`
+5. 复制 **客户端 ID** 和 **客户端密钥**
+6. 添加到环境变量
+
+## 自定义域名
+
+在 Vercel Dashboard 中：
+1. 进入项目设置
+2. 点击 **Domains**
+3. 添加你的域名：`feiyu-imagebackgroundremover.shop`
+4. 按照提示配置 DNS
+
 ## 项目结构
 
 ```
 image-bg-remover-next/
 ├── app/
 │   ├── api/
-│   │   └── remove-bg/
-│   │       └── route.ts          # API 路由
-│   ├── layout.tsx                # 根布局
-│   ├── page.tsx                  # 主页面
-│   └── globals.css               # 全局样式
-├── public/                       # 静态资源
+│   │   ├── auth/           # NextAuth API routes
+│   │   └── remove-bg/      # 背景移除 API
+│   ├── layout.tsx          # 根布局
+│   ├── page.tsx            # 主页面
+│   └── globals.css         # 全局样式
 ├── docs/
-│   └── mvp-requirements.md       # MVP 需求文档
-├── .env.local.example            # 环境变量示例
-├── next.config.ts                # Next.js 配置
-├── tailwind.config.ts            # Tailwind 配置
+│   └── mvp-requirements.md # MVP 需求文档
+├── .env.local.example      # 环境变量示例
+├── next.config.ts          # Next.js 配置
+├── tailwind.config.ts      # Tailwind 配置
 └── package.json
 ```
-
-## 使用方法
-
-1. 上传图片（支持 JPG、PNG、WEBP，最大 10MB）
-2. 点击"移除背景"按钮
-3. 等待处理完成（3-10秒）
-4. 下载处理后的图片
 
 ## API 说明
 
@@ -108,43 +147,11 @@ image-bg-remover-next/
 }
 ```
 
-**错误响应：**
-```json
-{
-  "error": "错误信息"
-}
-```
-
-## 部署
-
-### Vercel (推荐)
-
-1. 推送代码到 GitHub
-2. 在 Vercel 导入项目
-3. 配置环境变量 `REMOVEBG_API_KEY`
-4. 部署
-
-### Cloudflare Pages
-
-1. 推送代码到 GitHub
-2. 在 Cloudflare Pages 连接仓库
-3. 构建命令：`npm run build`
-4. 输出目录：`.next`
-5. 配置环境变量
-
 ## 成本说明
 
-Remove.bg API 定价：
-- 免费：50 次/月
-- 付费：$0.20/张起
-
-建议：
-- 开发测试使用免费额度
-- 生产环境根据流量选择合适套餐
-
-## 开发计划
-
-查看 [MVP 需求文档](./docs/mvp-requirements.md) 了解详细的开发计划。
+- **Remove.bg API**: 免费 50 次/月，付费 $0.20/张起
+- **Vercel**: 免费额度足够个人项目使用
+- **Google OAuth**: 免费
 
 ## 许可证
 
