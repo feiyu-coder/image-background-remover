@@ -111,7 +111,10 @@ export default function Home() {
         <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden">
           {/* Header */}
           <header className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white py-12 px-8 text-center">
-            <h1 className="text-5xl font-bold mb-4">🖼️ Image Background Remover</h1>
+            <h1 className="text-5xl font-bold mb-4 flex items-center justify-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              Image Background Remover
+            </h1>
             <p className="text-xl opacity-90">快速移除图片背景，无需注册，保护隐私</p>
           </header>
 
@@ -130,7 +133,9 @@ export default function Home() {
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
               >
-                <div className="text-7xl mb-6">📤</div>
+                <div className="mb-6 flex justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#667eea" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
                 <div className="text-2xl font-semibold text-purple-700 mb-3">
                   点击或拖拽上传图片
                 </div>
